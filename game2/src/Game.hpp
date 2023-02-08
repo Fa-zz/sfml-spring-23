@@ -6,6 +6,11 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
+#include <SFML/Audio.hpp>
+#include <SFML/Network.hpp>
+
+#include "Player.hpp"
+
 
 class Game {
 private:
@@ -13,6 +18,8 @@ private:
     sf::RenderWindow* window;   
     bool endGame;               // endGame: flag to determine when game should end
     sf::Event sfmlEvent;        // sfmlEvent: Gets event from mouse, keyboard, window etc 
+
+    Player player;              // player: Represents the player
 
     // Initializer functions
     void initVariables();
