@@ -25,11 +25,16 @@ void Engine::initView() {
     viewSpeed = 200.f;
 }
 
-void Engine::initObjs() {
-    this->shape.setSize(sf::Vector2f(gridSizeF, gridSizeF));
-    this->shape.setFillColor(sf::Color::Magenta);
+void Engine::initElems() {
+    this->circle.setPos(sf::Vector2f(this->window->getSize().x / 2.f, this->window->getSize().y / 2.f));
+    //std::cout << this->window->getSize().x / 2.f << " " << this->window->getSize().y / 2.f << std::endl;
+    this->circle.setPos(sf::Vector2f(600.f, 20.f));
+    objects.push_back(this->circle);
+
     this->ground.setSize(sf::Vector2f(1920.f, 100.f));
     this->ground.setPosition(sf::Vector2f(0, 980.0f));
+    // this->object.setSize(sf::Vector2f(gridSizeF, gridSizeF));
+    // this->object.setPosition(this->window->getSize().x / 2.f, this->window->getSize().y / 2.f);
 }
 
 // Constructor
@@ -37,7 +42,7 @@ Engine::Engine() {
     this->initVariables();
     this->initWindow();
     this->initView();
-    this->initObjs();
+    this->initElems();
 }
 
 // Destructor
@@ -81,13 +86,43 @@ void Engine::updateCamera() {
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) { // Down
         view.move(0.f, viewSpeed * dt);
     }
-    std::cout << shape.getPosition().y << std::endl;
+    //std::cout << shape.getPosition().y << std::endl;
 }
 
 void Engine::updateObjs() {
-    if (!shape.getGlobalBounds().intersects(ground.getGlobalBounds())) {
-        shape.move(0.f, gravity);
-    }
+    this->circle.updatePosition(dt);
+    // if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+    //     if (this->mouseHeld == false) {
+    //         mouseHeld = true;
+    //         spawnObjs();
+    //     } else {
+    //         mouseHeld = false;
+    //     }
+    // }
+
+    // for (auto &object : this->objects) {
+    //     collisionCheck(object);
+    // }
+
+}
+
+void Engine::spawnObjs() {
+    // this->object.setSize(sf::Vector2f(gridSizeF, gridSizeF));
+    // this->object.setPosition(this->mousePosView);
+    // int randColor = rand() % 5;
+    // switch (randColor) {
+    // case 0:
+    //     this->object.setFillColor(sf::Color::White);
+    // case 1:
+    //     this->object.setFillColor(sf::Color::Yellow);
+    // case 2:
+    //     this->object.setFillColor(sf::Color::Green);
+    // case 3:
+    //     this->object.setFillColor(sf::Color::Red);
+    // case 4:
+    //     this->object.setFillColor(sf::Color::Cyan);
+    // }
+    // objects.push_back(object);
 }
 
 void Engine::update() {
@@ -103,7 +138,8 @@ void Engine::update() {
 }
 
 void Engine::renderObjs(sf::RenderTarget& target) {
-    target.draw(shape);
+    for (auto &object : this->objects)
+        target.draw(object.getVisual());
     target.draw(ground);
 }
 

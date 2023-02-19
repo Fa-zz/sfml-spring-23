@@ -5,6 +5,8 @@
 #include <ctime>
 #include <sstream>
 
+#include "Object.hpp"
+
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -25,6 +27,7 @@ public:
     void pollEvents();
     void updateMousePos();
     void updateCamera();
+    void spawnObjs();
     void updateObjs();
     void update();
 
@@ -58,13 +61,13 @@ private:
     bool mouseHeld;
 
     // Objects
-    sf::RectangleShape shape;
+    Object circle;
     sf::RectangleShape ground;
-    std::vector<sf::RectangleShape> objects;
+    std::vector<Object> objects;
 
     // Private functions    
     void initVariables();
     void initWindow();
     void initView();
-    void initObjs();
+    void initElems();
 };
