@@ -55,7 +55,6 @@ private:
     sf::Vector2f mousePosView;
 
     // Logic
-    float gravity;
     float gridSizeF;
     unsigned gridSizeU;
     bool endGame;
