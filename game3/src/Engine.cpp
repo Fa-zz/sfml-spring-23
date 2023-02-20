@@ -26,13 +26,19 @@ void Engine::initView() {
 }
 
 void Engine::initElems() {
-    this->circle.setPos(sf::Vector2f(this->window->getSize().x / 2.f, this->window->getSize().y / 2.f));
+    //this->circle.setPos(sf::Vector2f(this->window->getSize().x / 2.f, this->window->getSize().y / 2.f));
     //std::cout << this->window->getSize().x / 2.f << " " << this->window->getSize().y / 2.f << std::endl;
     this->circle.setPos(sf::Vector2f(600.f, 20.f));
     objects.push_back(this->circle);
 
+    // this->circle.setPos(sf::Vector2f(1000.f, 20.f));
+    // objects.push_back(this->circle);
+
     this->ground.setSize(sf::Vector2f(1920.f, 100.f));
     this->ground.setPosition(sf::Vector2f(0, 980.0f));
+
+    //this->solver.setCurrObj(this->circle);
+
     // this->object.setSize(sf::Vector2f(gridSizeF, gridSizeF));
     // this->object.setPosition(this->window->getSize().x / 2.f, this->window->getSize().y / 2.f);
 }
@@ -90,7 +96,12 @@ void Engine::updateCamera() {
 }
 
 void Engine::updateObjs() {
-    this->circle.updatePosition(dt);
+    //this->circle.updatePosition(dt);    // TODO: remove this, replace with physicssolver update funct
+    float currentDeltaT = dt;
+    for (auto &object : this->objects) {
+        this->solver.update(object, currentDeltaT);
+    }
+    
     // if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
     //     if (this->mouseHeld == false) {
     //         mouseHeld = true;

@@ -6,6 +6,7 @@
 #include <sstream>
 
 #include "Object.hpp"
+#include "PhysicsSolver.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
@@ -64,6 +65,9 @@ private:
     Object circle;
     sf::RectangleShape ground;
     std::vector<Object> objects;
+
+    // Solver
+    PhysicsSolver solver;
 
     // Private functions    
     void initVariables();

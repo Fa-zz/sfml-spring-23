@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -7,12 +8,6 @@
 #include <SFML/Network.hpp>
 
 class Object {
-private:
-    sf::CircleShape visual;
-    sf::Vector2f positionCurrent;
-    sf::Vector2f positionOld;
-    sf::Vector2f acceleration;
-
 public:
     Object();
 
@@ -24,5 +19,11 @@ public:
     void updatePosition(float dt);
 
     void accelerate(sf::Vector2f acc);
+
+private:
+    sf::CircleShape visual;
+    sf::Vector2f positionCurrent;
+    sf::Vector2f positionOld;
+    sf::Vector2f acceleration;
 
 };
