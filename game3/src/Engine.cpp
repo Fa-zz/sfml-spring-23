@@ -28,8 +28,11 @@ void Engine::initView() {
 void Engine::initElems() {
     //this->circle.setPos(sf::Vector2f(this->window->getSize().x / 2.f, this->window->getSize().y / 2.f));
     //std::cout << this->window->getSize().x / 2.f << " " << this->window->getSize().y / 2.f << std::endl;
-    this->circle.setPos(sf::Vector2f(600.f, 20.f));
-    objects.push_back(this->circle);
+    
+    Object *circle = new Object();
+
+    circle->setPos(sf::Vector2f(600.f, 20.f));
+    objects.push_back(circle);
 
     // this->circle.setPos(sf::Vector2f(1000.f, 20.f));
     // objects.push_back(this->circle);
@@ -53,6 +56,9 @@ Engine::Engine() {
 
 // Destructor
 Engine::~Engine() {
+    for (unsigned int i = 0; i < objects.size(); i++) {
+        delete objects[i];
+    }
     delete this->window;
 }
 
@@ -98,9 +104,14 @@ void Engine::updateCamera() {
 void Engine::updateObjs() {
     //this->circle.updatePosition(dt);    // TODO: remove this, replace with physicssolver update funct
     float currentDeltaT = dt;
-    for (auto &object : this->objects) {
+
+    for (auto object : this->objects) {
         this->solver.update(object, currentDeltaT);
     }
+
+    // for (auto &object : this->objects) {
+    //     this->solver.update(object, currentDeltaT);
+    // }
     
     // if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
     //     if (this->mouseHeld == false) {
@@ -150,7 +161,7 @@ void Engine::update() {
 
 void Engine::renderObjs(sf::RenderTarget& target) {
     for (auto &object : this->objects)
-        target.draw(object.getVisual());
+        target.draw(object->getVisual());
     target.draw(ground);
 }
 

@@ -18,7 +18,7 @@ class Engine {
 public:
     // Constructors
     Engine();
-    virtual ~Engine();
+    ~Engine();
 
     // Accessors
     const bool running() const;
@@ -62,9 +62,9 @@ private:
     bool mouseHeld;
 
     // Objects
-    Object circle;
+    //Object circle;
     sf::RectangleShape ground;
-    std::vector<Object> objects;
+    std::vector<Object*> objects;
 
     // Solver
     PhysicsSolver solver;

@@ -11,21 +11,20 @@ void PhysicsSolver::setCurrObj(Object object) {
     std::cout << (*currObject).getVisual().getPosition().x << std::endl;
 }
 
-void PhysicsSolver::update(Object object, float dt) {
-    currObject = &object;
+void PhysicsSolver::update(Object *object, float dt) {
     //std::cout << (*currObject).getVisual().getPosition().x << std::endl;
-    updatePositions(dt);
-    applyGravity();
+    updatePositions(object, dt);
+    applyGravity(object);
 
 }
 
-void PhysicsSolver::updatePositions(float dt) {
+void PhysicsSolver::updatePositions(Object *object, float dt) {
     // std::cout << currObject->getVisual().getPosition().y << std::endl;
     // for each object, call updatePosition(dt)
-    currObject->updatePosition(dt);
+    object->updatePosition(dt);
 }
 
-void PhysicsSolver::applyGravity() {
+void PhysicsSolver::applyGravity(Object *object) {
     // for each object, call accelerate(gravity)
-    currObject->accelerate(gravity);
+    object->accelerate(gravity);
 }

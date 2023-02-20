@@ -14,11 +14,11 @@ public:
 
     void setCurrObj(Object object);
 
-    void update(Object object, float dt);
+    void update(Object *object, float dt);
 
-    void updatePositions(float dt);
+    void updatePositions(Object *object, float dt);
 
-    void applyGravity();
+    void applyGravity(Object *object);
 
 private:
     sf::Vector2f gravity;

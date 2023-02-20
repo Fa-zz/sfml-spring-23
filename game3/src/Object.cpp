@@ -30,13 +30,16 @@ void Object::updatePosition(float dt) {
     std::cout << " At start, acceleration = " << this->acceleration.x << " " << this->acceleration.y << std::endl;
     const sf::Vector2f velocity = this->positionCurrent - this->positionOld;
     // Save current position
-    this->positionOld =this-> positionCurrent;
+    this->positionOld = this-> positionCurrent;
     // Perform Verlect integration
     this->positionCurrent = this->positionCurrent + velocity + this->acceleration * dt * dt;
     // Reset acceleration
-    //acceleration = {0.f, 0.f};
+    acceleration = {0.f, 0.f};
 
-    std::cout << "Velocity: " << velocity.x << " " << velocity.y << " positionCurrent: " << this->positionCurrent.x << " " << this->positionCurrent.y << " positionOld: " << this->positionOld.x << " " << this->positionOld.y << " accel: " << this->acceleration.x << " " << this->acceleration.y << std::endl;
+    // Move the visual
+    this->visual.move(velocity);
+
+    std::cout << "Time: " << dt << " Velocity: " << velocity.x << " " << velocity.y << " positionCurrent: " << this->positionCurrent.x << " " << this->positionCurrent.y << " positionOld: " << this->positionOld.x << " " << this->positionOld.y << " accel: " << this->acceleration.x << " " << this->acceleration.y << std::endl;
 }
 
 void Object::accelerate(sf::Vector2f acc) {
