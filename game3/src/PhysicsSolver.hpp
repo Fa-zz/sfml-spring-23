@@ -29,6 +29,7 @@ public:
     void applyConstraints(Object *object);
 
 private:
+    float gravityYBaseline;
     sf::Vector2f gravity;   // gravity: Amount by which object's velocity "decreases" in y direction
     Object* currObject;     // currObject: Pointer that points to the object that is currently being updated
 

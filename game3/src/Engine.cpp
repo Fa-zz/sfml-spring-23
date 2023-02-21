@@ -27,7 +27,8 @@ void Engine::initView() {
 void Engine::initElems() {    
     Object *circle = new Object();
 
-    circle->setPos(sf::Vector2f(600.f, 20.f));
+    circle->setPos(sf::Vector2f(960.f, 700.0f));
+    circle->setSizeVisual(gridSizeF / 4);
     objects.push_back(circle);
 
     this->ground.setSize(sf::Vector2f(1920.f, 100.f));

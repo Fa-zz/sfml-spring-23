@@ -43,6 +43,10 @@ void Object::setPosVisual(sf::Vector2f pos) {
     this->visual.setPosition(pos);
 }
 
+void Object::setSizeVisual(float radius) {
+    this->visual.setRadius(radius);
+}
+
 // getVisual: Getter for visual of object
 // Preconditions: Object exists
 // Postconditions: None
@@ -62,12 +66,11 @@ void Object::updatePosition(float dt) {
     this->positionOld = this-> positionCurrent;
     // Perform Verlect integration
     this->positionCurrent = this->positionCurrent + velocity + this->acceleration * dt * dt;
+
+    // Moves the visual
     this->setPosVisual(positionCurrent);
     // Reset acceleration
     acceleration = {0.f, 0.f};
-
-    // // Move the visual
-    // this->visual.move(velocity);
 
     std::cout << "Time: " << dt << " Velocity: " << velocity.x << " " << velocity.y << " positionCurrent: " << this->positionCurrent.x << " " << this->positionCurrent.y << " positionOld: " << this->positionOld.x << " " << this->positionOld.y << " accel: " << this->acceleration.x << " " << this->acceleration.y << std::endl;
 }

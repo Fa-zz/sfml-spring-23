@@ -21,6 +21,8 @@ public:
     void setPosObject(sf::Vector2f pos);
     // Setter for object's visual
     void setPosVisual(sf::Vector2f pos);
+    // Setter for object's visual's size/radius
+    void setSizeVisual(float radius);
 
     // Getter for visual
     sf::CircleShape getVisual();
