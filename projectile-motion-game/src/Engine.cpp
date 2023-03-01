@@ -1,9 +1,12 @@
 #include "Engine.hpp"
+#include <typeinfo>
 
 // Init functions
 void Engine::initVariables() {
     this->window = nullptr;
     this->endGame = false;
+
+    this->groundStart = 980.f;
 }
 void Engine::initWindow() {
     this->videoMode.height = 1080;
@@ -14,10 +17,18 @@ void Engine::initWindow() {
 void Engine::initView() {
     this->view.setSize(1920.f, 1080.f);
     this->view.setCenter(this->window->getSize().x / 2.f, this->window->getSize().y / 2.f);
-    this->viewSpeed = 200.f;
+    this->viewSpeed = 50.f;
 }
 void Engine::initElems() {
+    this->ground.setSize(sf::Vector2f(1920.f, 100.f));
+    this->ground.setPosition(sf::Vector2f(0, this->groundStart));
+    this->ground.setFillColor(sf::Color::White);
 
+    Tank *tank1 = new Tank();
+    tank1->setPosition(sf::Vector2f(500.f, this->groundStart-tank1->getTankBody().getSize().y));
+    tank1->setColor(sf::Color::Green);
+
+    this->tanks.push_back(tank1);
 }
 
 // Constructor
@@ -28,6 +39,9 @@ Engine::Engine() {
     this->initElems();
 } 
 Engine::~Engine() {
+    for (auto &tank : tanks) {
+        delete tank;
+    }
     delete this->window;
 }
 
@@ -49,6 +63,17 @@ void Engine::pollEvents() {
         }
     }
 }
+void Engine::updateCamera() {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {        // Left
+    view.move(-viewSpeed * timeNow, 0.f);
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) { // Right
+        view.move(viewSpeed * timeNow, 0.f);
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { // Up
+        view.move(0.f, -viewSpeed * timeNow);
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) { // Down
+        view.move(0.f, viewSpeed * timeNow);
+    }
+}
 void Engine::playerInput() {
 
 }
@@ -59,8 +84,11 @@ void Engine::update() {
     this->pollEvents();
 
     // Update time
-    elapsed = clock.getElapsedTime().asSeconds();
-    float timeNow = elapsed;
+    this->elapsed = clock.getElapsedTime().asSeconds();
+    this->timeNow = elapsed;
+
+    // std::cout << tanks[0]->getTankBody().getPosition().x << std::endl;
+    tanks[0]->getTankBody().setFillColor(sf::Color::Green);
 
     if (this->endGame == false) {
         this->updateCamera();
@@ -71,7 +99,11 @@ void Engine::update() {
 
 // Render
 void Engine::renderObjs(sf::RenderTarget& target) {
-
+    for (auto &tank : this->tanks) {
+        target.draw(tank->getTankBody());
+        target.draw(tank->getTankCannon());
+    }
+    target.draw(this->ground);
 }
 void Engine::render() {
     this->window->clear();

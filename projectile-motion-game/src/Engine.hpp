@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <cmath>
 
+#include "Tank.hpp"
+
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -43,12 +45,18 @@ private:
     // Time
     sf::Clock clock;
     float elapsed;
+    float timeNow;
 
     //Logic
+    float groundStart;
     float initAngle;
     float initVel;
     float initVelY, initVelX;
     bool endGame;
+
+    // Objects
+    sf::RectangleShape ground;
+    std::vector<Tank*> tanks;
 
     // Private functions    
     void initVariables();
