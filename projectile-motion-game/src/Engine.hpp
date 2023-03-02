@@ -44,11 +44,14 @@ private:
 
     // Time
     sf::Clock clock;
+    float dt = 0.f;
     float elapsed;
     float timeNow;
 
     //Logic
     float groundStart;
+    float moveSpeed;
+    float rotateBy;
     float initAngle;
     float initVel;
     float initVelY, initVelX;

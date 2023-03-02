@@ -6,7 +6,10 @@ void Engine::initVariables() {
     this->window = nullptr;
     this->endGame = false;
 
+    this->rotateBy = 25.f;
+    this->initAngle = 90.f;
     this->groundStart = 980.f;
+    this->moveSpeed = 30.f;
 }
 void Engine::initWindow() {
     this->videoMode.height = 1080;
@@ -65,7 +68,7 @@ void Engine::pollEvents() {
 }
 void Engine::updateCamera() {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {        // Left
-    view.move(-viewSpeed * timeNow, 0.f);
+        view.move(-viewSpeed * timeNow, 0.f);
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) { // Right
         view.move(viewSpeed * timeNow, 0.f);
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { // Up
@@ -75,6 +78,18 @@ void Engine::updateCamera() {
     }
 }
 void Engine::playerInput() {
+    std::cout << "init angle: " << this->initAngle << std::endl;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {  // Tank moves horizontally to right
+        tanks[0]->move(this->moveSpeed*dt);
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {  // Tank moves horizontally to left
+        tanks[0]->move(-this->moveSpeed*dt);
+    } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {  // Cannon angle up
+        tanks[0]->rotateCannon(-this->rotateBy * dt);
+        this->initAngle += 25.f * dt;
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) { // Cannon angle down
+        tanks[0]->rotateCannon(this->rotateBy * dt);
+        this->initAngle -= 25.f * dt;
+    }
 
 }
 void Engine::updateObjs() {
@@ -84,6 +99,7 @@ void Engine::update() {
     this->pollEvents();
 
     // Update time
+    this->dt = clock.restart().asSeconds();
     this->elapsed = clock.getElapsedTime().asSeconds();
     this->timeNow = elapsed;
 

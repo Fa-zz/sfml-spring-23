@@ -16,6 +16,8 @@ public:
 
     void setPosition(sf::Vector2f tankPosition);
     void setColor(sf::Color color);
+    void move(float moveBy);
+    void rotateCannon(float rotateBy);
 
     sf::RectangleShape getTankBody();
     sf::RectangleShape getTankCannon();
