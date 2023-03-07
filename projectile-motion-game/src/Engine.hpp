@@ -47,6 +47,8 @@ private:
     float dt = 0.f;
     float elapsed;
     float timeNow;
+    float accumulator;
+    float timestep;
 
     //Logic
     float groundStart;

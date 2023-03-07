@@ -17,6 +17,9 @@ void Engine::initVariables() {
     this->gravity = 9.81f;
     this->afterVelY = 0.f;
 
+    accumulator = 0;
+    timestep = 1.0f / 60.0f;
+
     std::vector<Tank*> tanks;
     std::vector<sf::CircleShape*> projectiles;
 
@@ -157,23 +160,39 @@ void Engine::updateObjs() {
     if (projectileInAir) {
         std::cout << "Projectile y: " << projectiles[0]->getPosition().y << std::endl;
         std::cout << "Projectile X: " << projectiles[0]->getPosition().x << std::endl;
+        
+        bool conditionToReachMaxHeight;
+        bool conditionToFallBackDown = projectiles[0]->getPosition().y < 980.f;
+        bool smoothPeak = false;
+        int sleepFor = 10000;
+        float initVelXOffset = 3.f;
+        float initVelYIncrementBy = 1.0f;
+        float afterVelYIncrementBy = 9.5f;
 
-        // TODO: CHANGE THIS IF STATEMENT TO REFLECT SHOOTING LEFTWARDS AND NOT JUST RIGHTWARDS (X CONDITION WOULD BE DIFFERENT, FLIP THE SIGN)
-        // CHANGE THE NUMBERS IM ADDING DEPENDING ON WHERE ANGLE IS (SO IF ANGLE IS AROUND 90, DO NOT ADD CONST OF 15 TO BALL'S X)
-        if (projectiles[0]->getPosition().y > maxHeight && projectiles[0]->getPosition().x < distAtMaxHeight) {
-            // usleep(10000);
-            initVelY -= 1.0f;
-            // projectiles[0]->move(initVelX*dt, -initVelY*dt);
-            projectiles[0]->move(initVelX*dt+10.f, -initVelY);
-        // THIS ELSE IF STATEMENT STARTS BRINGING THE BALL BACK DOWN WHEN IT ISN'T AT GROUND LEVEL
-        // TRY BRINGING IT BACK DOWN BEFORE IT REACHES MAX HEIGHT
-        } else if (projectiles[0]->getPosition().y < 980.f) {
-            usleep(10000);
-            // afterVelY += 9.5f;
-            afterVelY += 3.f;
-            // initVelY += gravityInAction;
-            projectiles[0]->move(initVelX*dt+10.f, afterVelY);
-            //shape.move(sf::Vector2f((initVelX*timeNow), (initVelY*timeNow + (9.81f)*(timeNow)*(timeNow))));
+        if (initAngle <= 85.f) { // Cannon shoots to the right
+            conditionToReachMaxHeight = projectiles[0]->getPosition().y > maxHeight && projectiles[0]->getPosition().x < distAtMaxHeight;
+        } else if (initAngle >= 95.f) { // Cannon shoots to the left
+            conditionToReachMaxHeight = projectiles[0]->getPosition().y > maxHeight && projectiles[0]->getPosition().x > distAtMaxHeight;
+        } else if (initAngle >= 85.f && initAngle <= 95.f) {  // Cannon is shooting upwards
+            // pass
+        }
+        
+        if (conditionToReachMaxHeight) {
+            // initVelY -= initVelYIncrementBy;
+            // projectiles[0]->move(10.f+initVelX*dt, -initVelY);
+            sf::Vector2f positionNow = projectiles[0]->getPosition() + sf::Vector2f(initVelX, -initVelY);
+            projectiles[0]->setPosition(0.999f*positionNow);
+            smoothPeak = true;
+        } else if (conditionToFallBackDown) {
+            usleep(sleepFor);
+            // initVelY *= dt;
+            // initVelX *= dt;
+            // afterVelY += afterVelYIncrementBy;
+            // projectiles[0]->move(10.f+initVelX*dt, afterVelY);
+
+            sf::Vector2f positionNow = projectiles[0]->getPosition() + sf::Vector2f(initVelX, initVelY);
+            projectiles[0]->setPosition(0.999f*positionNow);
+
         }
 
         if (projectiles[0]->getPosition().y >= this->groundStart) {
@@ -194,9 +213,9 @@ void Engine::update() {
 
     // Update time
     this->dt = clock.restart().asSeconds();
-    this->elapsed = clock.getElapsedTime().asSeconds();
-    this->timeNow = elapsed;
-
+    // this->elapsed = clock.getElapsedTime().asSeconds();
+    // this->timeNow = elapsed;
+    accumulator += clock.restart().asSeconds();
     // std::cout << tanks[0]->getTankBody().getPosition().x << std::endl;
     tanks[0]->getTankBody().setFillColor(sf::Color::Green);
 
