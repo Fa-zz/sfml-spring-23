@@ -52,14 +52,20 @@ private:
     float groundStart;
     float moveSpeed;
     float rotateBy;
-    float initAngle;
+    bool chargedUp;
     float initVel;
+    float initAngle;
+    float maxHeight, gravity, timeToReachMaxHeight, distAtMaxHeight;
     float initVelY, initVelX;
+    bool projectileInAir;
+    float afterVelY;
     bool endGame;
 
     // Objects
     sf::RectangleShape ground;
     std::vector<Tank*> tanks;
+    std::vector<sf::CircleShape*> projectiles;
+    sf::CircleShape *projectile;
 
     // Private functions    
     void initVariables();

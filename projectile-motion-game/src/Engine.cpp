@@ -6,10 +6,20 @@ void Engine::initVariables() {
     this->window = nullptr;
     this->endGame = false;
 
-    this->rotateBy = 25.f;
-    this->initAngle = 90.f;
     this->groundStart = 980.f;
-    this->moveSpeed = 30.f;
+    this->moveSpeed = 100.f;
+
+    this->initAngle = 90.f;
+    this->rotateBy = 25.f;
+    this->chargedUp = false;
+    this->initVel = 0.f;
+    this->projectileInAir = false;
+    this->gravity = 9.81f;
+    this->afterVelY = 0.f;
+
+    std::vector<Tank*> tanks;
+    std::vector<sf::CircleShape*> projectiles;
+
 }
 void Engine::initWindow() {
     this->videoMode.height = 1080;
@@ -28,7 +38,7 @@ void Engine::initElems() {
     this->ground.setFillColor(sf::Color::White);
 
     Tank *tank1 = new Tank();
-    tank1->setPosition(sf::Vector2f(500.f, this->groundStart-tank1->getTankBody().getSize().y));
+    tank1->setPosition(sf::Vector2f(0.f, this->groundStart-tank1->getTankBody().getSize().y));
     tank1->setColor(sf::Color::Green);
 
     this->tanks.push_back(tank1);
@@ -78,22 +88,106 @@ void Engine::updateCamera() {
     }
 }
 void Engine::playerInput() {
-    std::cout << "init angle: " << this->initAngle << std::endl;
+    // std::cout << "angle: " << this->initAngle << std::endl;
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {  // Tank moves horizontally to right
         tanks[0]->move(this->moveSpeed*dt);
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {  // Tank moves horizontally to left
         tanks[0]->move(-this->moveSpeed*dt);
     } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {  // Cannon angle up
         tanks[0]->rotateCannon(-this->rotateBy * dt);
-        this->initAngle += 25.f * dt;
+        this->initAngle += rotateBy * dt;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) { // Cannon angle down
         tanks[0]->rotateCannon(this->rotateBy * dt);
-        this->initAngle -= 25.f * dt;
+        this->initAngle -= rotateBy * dt;
+    }
+
+    // Cannon power up while player holds down space
+    while (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+        this->initVel += 0.001f;
+        std::cout << "this->initVel:" << this->initVel << std::endl;
+        this->chargedUp = true;
+    }
+
+    // If cannon is powered up, prepare to launch projectile
+    if (chargedUp && !(projectileInAir)) {
+
+        /*
+        Set pointer to null
+        Reset variables
+        maxHeight += projectiles[0]->getPosition().y
+        distAtMaxHeight += projectiles[0]->getPosition().x
+        */
+
+        // sf::CircleShape *projectile = nullptr;
+        this->maxHeight = 0;
+        this->distAtMaxHeight = 0;
+        this->timeToReachMaxHeight = 0;
+
+        initVelX = (initVel) * (cos( (initAngle * 3.1459)/180.f ));
+        initVelY = (initVel) * (sin( (initAngle * 3.1459)/180.f ));
+
+        if (initAngle >= 90.f)
+            initVelX -= initVelX - initVelX;
+
+        std::cout << "initVelY: " << initVelY << " initVelX: " << initVelX << std::endl;
+        maxHeight =  -(initVelY*initVelY) / (2*gravity);
+        maxHeight -= this->tanks[0]->getTankCannon().getPosition().y;
+        timeToReachMaxHeight = sqrtf((-2*maxHeight) / gravity);
+        distAtMaxHeight = initVelX * timeToReachMaxHeight;
+        distAtMaxHeight += this->tanks[0]->getTankCannon().getPosition().x;
+        std::cout << "timeToReachMaxHeight: " << timeToReachMaxHeight << std::endl;
+        std::cout << "Max height: " << maxHeight << " Max range: " << distAtMaxHeight << std::endl;
+
+        projectile = new sf::CircleShape(5.f);
+        std::cout << "Projectile pointer" << std::endl;
+        this->projectiles.push_back(projectile);
+        // projectile->setRadius(5.f);
+        sf::Vector2f projectileLocation = sf::Vector2f((this->tanks[0]->getTankCannon().getPosition().x + (this->tanks[0]->getTankCannon().getSize().x-((this->tanks[0]->getTankCannon().getSize().x)/2.f))), (this->tanks[0]->getTankCannon().getPosition().y - this->tanks[0]->getTankCannon().getSize().y)); 
+        std::cout << "Projectile start y: " << this->tanks[0]->getTankCannon().getPosition().y - this->tanks[0]->getTankCannon().getSize().y << std::endl;
+        std::cout << "Projectile start x: " << (this->tanks[0]->getTankCannon().getPosition().x + (this->tanks[0]->getTankCannon().getSize().x-((this->tanks[0]->getTankCannon().getSize().x)/2.f))) << std::endl;
+        projectile->setPosition(projectileLocation);
+
+        chargedUp = false;
+        this->projectileInAir = true;
     }
 
 }
 void Engine::updateObjs() {
+    if (projectileInAir) {
+        std::cout << "Projectile y: " << projectiles[0]->getPosition().y << std::endl;
+        std::cout << "Projectile X: " << projectiles[0]->getPosition().x << std::endl;
 
+        // TODO: CHANGE THIS IF STATEMENT TO REFLECT SHOOTING LEFTWARDS AND NOT JUST RIGHTWARDS (X CONDITION WOULD BE DIFFERENT, FLIP THE SIGN)
+        // CHANGE THE NUMBERS IM ADDING DEPENDING ON WHERE ANGLE IS (SO IF ANGLE IS AROUND 90, DO NOT ADD CONST OF 15 TO BALL'S X)
+        if (projectiles[0]->getPosition().y > maxHeight && projectiles[0]->getPosition().x < distAtMaxHeight) {
+            // usleep(10000);
+            initVelY -= 1.0f;
+            // projectiles[0]->move(initVelX*dt, -initVelY*dt);
+            projectiles[0]->move(initVelX*dt+10.f, -initVelY);
+        // THIS ELSE IF STATEMENT STARTS BRINGING THE BALL BACK DOWN WHEN IT ISN'T AT GROUND LEVEL
+        // TRY BRINGING IT BACK DOWN BEFORE IT REACHES MAX HEIGHT
+        } else if (projectiles[0]->getPosition().y < 980.f) {
+            usleep(10000);
+            // afterVelY += 9.5f;
+            afterVelY += 3.f;
+            // initVelY += gravityInAction;
+            projectiles[0]->move(initVelX*dt+10.f, afterVelY);
+            //shape.move(sf::Vector2f((initVelX*timeNow), (initVelY*timeNow + (9.81f)*(timeNow)*(timeNow))));
+        }
+
+        if (projectiles[0]->getPosition().y >= this->groundStart) {
+            delete projectiles[0];
+            projectiles.pop_back();
+            projectile = nullptr;
+            std::cout << "Projectile deleted" << std::endl;
+            this->projectileInAir = false;
+            this->initVel = 0;
+            this->initVelX = 0;
+            this->initVelY = 0;
+            this->afterVelY = 0;
+        }
+    }
 }
 void Engine::update() {
     this->pollEvents();
@@ -119,6 +213,13 @@ void Engine::renderObjs(sf::RenderTarget& target) {
         target.draw(tank->getTankBody());
         target.draw(tank->getTankCannon());
     }
+
+    if (projectileInAir) {
+        for (auto &projectile : this->projectiles) {
+            target.draw(*projectile);
+        }
+    }
+
     target.draw(this->ground);
 }
 void Engine::render() {
